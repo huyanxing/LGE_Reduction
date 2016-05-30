@@ -1,0 +1,43 @@
+clc;
+clear;
+load 'reduce_set_full_features_SIGG.mat'
+load 'data.mat';
+ProceedData_ini = data1;
+%clear SkinNonSkin;
+%data = SUSYData;
+%clear SUSYData;
+features = data1(:,1:18);
+label = data1(:,19);
+ ProceedData_red_cell= reduce_set_full_features_SIGG([2,4,6,8]);
+ fid=fopen('NNresults_SUSY.txt','a+');
+ 
+ 
+
+     % k = i+1;
+    % paircount = 1;
+     %eval(['ProceedData_ini = data',num2str(i),';']) 
+     %eval(['ProceedData_red = data',num2str(k),';'])
+     [Trset,Teset] = NCrossPart(ProceedData_ini,10);
+     Trainingset_ini = Trset{1};
+      Testingset = Teset{1};
+      feature_num = size(Testingset,2)-1;
+     %[Tr_t_ini, Te_t_ini, Tr_Acc_ini, Te_Acc_ini] = elm(Trainingset_ini, Testingset,1,2*feature_num,'sig')
+      %fprintf(fid,'for the initial set \n');
+     %fprintf(fid,'tr_time is %f, te_time is %f, tr_acc is %f, te_acc is %f\n',Tr_t_ini, Te_t_ini, Tr_Acc_ini, Te_Acc_ini);
+     n=4;
+ for i=1:n 
+     Trainingset_red = ProceedData_red_cell{n+1-i};
+
+     %clear ('ProceedData_ini','ProceedData_red','Trset','Teset')
+     %eval(['clear data',num2str(i)]) 
+     %eval(['clear data',num2str(i)])
+
+     [Tr_t_red{i}, Te_t_red{i}, Tr_Acc_red{i}, Te_Acc_red{i}] = elm(Trainingset_red, Testingset,1,2*feature_num,'sig');
+     
+
+     %fprintf(fid,'Results for this pair:\n');
+
+     fprintf(fid,'for the reduced set with %d samples\n', length( Trainingset_red));
+     fprintf(fid,'tr_time is %f, te_time is %f, tr_acc is %f, te_acc is %f\n',Tr_t_red{i}, Te_t_red{i}, Tr_Acc_red{i}, Te_Acc_red{i});
+ end
+      fclose(fid);
